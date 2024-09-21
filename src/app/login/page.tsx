@@ -31,7 +31,7 @@ export default function Login() {
             if (data.isAdmin) {
                 router.push('/admin');
             } else {
-                router.push('/questionnaire_selection');
+                router.push('/QuestionnaireSelection');
             }
         } else {
             const data = await res.json();
