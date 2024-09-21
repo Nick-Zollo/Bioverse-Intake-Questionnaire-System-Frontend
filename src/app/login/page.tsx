@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+interface LoginResponse {
+    message: string;
+    isAdmin: boolean;
+}
+
 export default function Login() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const res = await fetch('/api/login', {
@@ -21,7 +26,13 @@ export default function Login() {
         });
 
         if (res.ok) {
-            router.push('/questionnaire_selection');
+            const data: LoginResponse = await res.json();
+            console.log('data', data);
+            if (data.isAdmin) {
+                router.push('/admin');
+            } else {
+                router.push('/questionnaire_selection');
+            }
         } else {
             const data = await res.json();
             setError(data.message);

@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req) {
-    const { username, password } = await req.json();
+interface LoginRequest {
+    username: string;
+    password: string;
+}
+
+export async function POST(req: Request) {
+    const { username, password }: LoginRequest = await req.json();
 
     const response = await fetch('http://localhost:3001/login', {
         method: 'POST',
@@ -14,7 +19,7 @@ export async function POST(req) {
     const data = await response.json();
 
     if (response.ok) {
-        return NextResponse.json({ message: 'Login successful' });
+        return NextResponse.json({ message: 'Login successful', isAdmin: data.isAdmin });
     } else {
         return NextResponse.json({ message: data.message }, { status: response.status });
     }
