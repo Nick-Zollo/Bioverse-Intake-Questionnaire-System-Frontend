@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface Questionnaire {
   id: number;
   name: string;
@@ -24,9 +26,11 @@ export default async function QuestionnaireSelection() {
             <div key={questionnaire.id} className="max-w-sm rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
               <h2 className="text-xl font-semibold">{questionnaire.name}</h2>
               <p className="text-gray-700">Description not provided.</p>
-              <button className="mt-4 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300">
-                Start
-              </button>
+              <Link href={`/Questionnaire/${questionnaire.id}`}>{questionnaire.name}
+                <button className="mt-4 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300">
+                  Start
+                </button>
+              </Link>
             </div>
           ))
         ) : (
