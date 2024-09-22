@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data, { status: 201 });
+    return NextResponse.json({ message: 'Answers saved successfully', redirect: '/QuestionnaireSelection' }, { status: 201 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

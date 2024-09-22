@@ -1,6 +1,7 @@
 'use client';
 
 import React, { FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Question {
   id: number;
@@ -19,6 +20,8 @@ interface QuestionnaireFormProps {
 }
 
 const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions, questionnaireId, previousAnswers }) => {
+  const router = useRouter();
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -64,11 +67,14 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
     } else {
       const result = await res.json();
       console.log('Submission result:', result);
+      if (result.redirect) {
+        router.push(result.redirect);
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-6">
       <input type="hidden" name="userId" value={userId} />
       {questions.length > 0 ? (
         questions.map((question) => {
@@ -76,13 +82,13 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
           const previousAnswer = previousAnswers[question.id];
 
           return (
-            <div key={question.id} className="max-w-sm rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
+            <div key={question.id} className="max-w-2xl mx-auto rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300 space-y-4">
               <p className="text-xl font-semibold">{parsedQuestion.question}</p>
               {parsedQuestion.type === 'mcq' ? (
-                <ul>
+                <ul className="space-y-2">
                   {parsedQuestion.options?.map((option: string) => (
                     <li key={option}>
-                      <label>
+                      <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
                           name={`question_${question.id}`}
@@ -92,8 +98,9 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
                               ? JSON.parse(previousAnswer[0]).includes(option)
                               : false
                           }
+                          className="form-checkbox h-5 w-5 text-blue-600"
                         />
-                        {option}
+                        <span>{option}</span>
                       </label>
                     </li>
                   ))}
@@ -103,8 +110,9 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
                   type="text"
                   name={`question_${question.id}`}
                   placeholder="Your answer"
-                  className="mt-2 p-2 border rounded"
+                  className="mt-2 p-2 border rounded w-full"
                   defaultValue={previousAnswer?.[0] || ''}
+                  required
                 />
               )}
             </div>
