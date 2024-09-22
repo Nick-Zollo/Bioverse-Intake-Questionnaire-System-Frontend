@@ -15,31 +15,40 @@ interface QuestionnaireFormProps {
   userId: string;
   questions: Question[];
   questionnaireId: string;
+  previousAnswers: Record<number, string[]>;
 }
 
-const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions, questionnaireId }) => {
+const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions, questionnaireId, previousAnswers }) => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const answers = questions.flatMap((question) => {
+    const answers = questions.map((question) => {
       if (question.question.type === 'mcq') {
         const selectedOptions = formData.getAll(`question_${question.id}`);
-        return selectedOptions.map((option) => ({
+        return {
           userId,
           questionId: question.id,
-          questionnaireId,
-          answer: option,
-        }));
+          answer: selectedOptions.length > 0 ? JSON.stringify(selectedOptions) : JSON.stringify([]),
+        };
       } else {
-        return [{
-          userId,
-          questionId: question.id,
-          questionnaireId,
-          answer: formData.get(`question_${question.id}`),
-        }];
+        const answer = formData.get(`question_${question.id}`)?.toString().trim();
+        if (answer === '') {
+          return null;
+        } else {
+          return {
+            userId,
+            questionId: question.id,
+            answer,
+          };
+        }
       }
-    });
+    }).filter(Boolean);
+
+    if (answers.length === 0) {
+      console.error('No valid answers to submit');
+      return;
+    }
 
     const res = await fetch('/api/questionnaire', {
       method: 'POST',
@@ -61,19 +70,29 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
   return (
     <form onSubmit={handleSubmit}>
       <input type="hidden" name="userId" value={userId} />
-      <input type="hidden" name="questionnaireId" value={questionnaireId} />
       {questions.length > 0 ? (
         questions.map((question) => {
           const parsedQuestion = question.question;
+          const previousAnswer = previousAnswers[question.id];
+
           return (
             <div key={question.id} className="max-w-sm rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
               <p className="text-xl font-semibold">{parsedQuestion.question}</p>
               {parsedQuestion.type === 'mcq' ? (
                 <ul>
-                  {parsedQuestion.options?.map((option: string, index: number) => (
-                    <li key={index}>
+                  {parsedQuestion.options?.map((option: string) => (
+                    <li key={option}>
                       <label>
-                        <input type="checkbox" name={`question_${question.id}`} value={option} />
+                        <input
+                          type="checkbox"
+                          name={`question_${question.id}`}
+                          value={option}
+                          defaultChecked={
+                            previousAnswer && previousAnswer.length > 0
+                              ? JSON.parse(previousAnswer[0]).includes(option)
+                              : false
+                          }
+                        />
                         {option}
                       </label>
                     </li>
@@ -85,6 +104,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
                   name={`question_${question.id}`}
                   placeholder="Your answer"
                   className="mt-2 p-2 border rounded"
+                  defaultValue={previousAnswer?.[0] || ''}
                 />
               )}
             </div>

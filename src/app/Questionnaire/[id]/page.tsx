@@ -17,6 +17,15 @@ interface QuestionnaireData {
   };
 }
 
+interface PreviousAnswer {
+  question_id: number;
+  answer: string;
+}
+
+interface PreviousAnswersData {
+  data: PreviousAnswer[];
+}
+
 export const revalidate = 60;
 
 export default async function QuestionnairePage({ params }: { params: { id: string } }) {
@@ -38,11 +47,35 @@ export default async function QuestionnairePage({ params }: { params: { id: stri
 
   const questions: Question[] = data.data.Questions;
 
+  const previousAnswersResponse = await fetch(`http://localhost:3001/answers/${userId}`);
+
+  if (!previousAnswersResponse.ok) {
+    console.error('Failed to fetch previous answers:', previousAnswersResponse.status);
+  }
+
+  const previousAnswersData: PreviousAnswersData = await previousAnswersResponse.json();
+  let previousAnswers: Record<number, string[]> = {};
+
+  if (previousAnswersResponse.ok) {
+    previousAnswers = previousAnswersData.data.reduce((acc: Record<number, string[]>, answer: PreviousAnswer) => {
+      if (!acc[answer.question_id]) {
+        acc[answer.question_id] = [];
+      }
+      acc[answer.question_id].push(answer.answer);
+      return acc;
+    }, {});
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <h1 className="text-2xl font-bold">Questionnaire</h1>
-        <QuestionnaireForm userId={userId} questions={questions} questionnaireId={questionnaireId} />
+        <QuestionnaireForm
+          userId={userId}
+          questions={questions}
+          questionnaireId={questionnaireId}
+          previousAnswers={previousAnswers}
+        />
       </main>
     </div>
   );
