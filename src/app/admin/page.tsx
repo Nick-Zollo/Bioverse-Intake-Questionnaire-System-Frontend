@@ -7,10 +7,10 @@ interface User {
   completed_questionnaires: number;
 }
 
-export const revalidate = 60;
+//export const revalidate = 5;
 
 const AdminPage = async () => {
-  const response = await fetch('http://localhost:3001/users');
+  const response = await fetch('https://bioverse-intake-questionnaire-system-backend.vercel.app/api/users', {cache: 'no-store',});
   const data = await response.json();
 
   if (!response.ok) {

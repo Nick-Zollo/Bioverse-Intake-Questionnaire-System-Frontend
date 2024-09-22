@@ -19,7 +19,7 @@ interface QuestionnaireFormProps {
   previousAnswers: Record<number, string[]>;
 }
 
-const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions, questionnaireId, previousAnswers }) => {
+const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions, previousAnswers }) => {
   const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

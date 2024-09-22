@@ -9,7 +9,7 @@ interface LoginRequest {
 export async function POST(req: Request) {
     const { username, password }: LoginRequest = await req.json();
 
-    const response = await fetch('http://localhost:3001/login', {
+    const response = await fetch('https://bioverse-intake-questionnaire-system-backend.vercel.app/api/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

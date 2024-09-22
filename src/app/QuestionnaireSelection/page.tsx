@@ -8,7 +8,7 @@ interface Questionnaire {
 export const revalidate = 60;
 
 export default async function QuestionnaireSelection() {
-  const response = await fetch('http://localhost:3001/questionnaires');
+  const response = await fetch('https://bioverse-intake-questionnaire-system-backend.vercel.app/api/questionnaires');
   const data = await response.json();
 
   if (!response.ok) {

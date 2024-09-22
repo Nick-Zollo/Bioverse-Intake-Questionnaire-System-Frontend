@@ -10,23 +10,27 @@ interface User {
 }
 
 interface Question {
-    type: string;
-    options?: string[];
-    question: string;
-  }
-  
-  interface Answer {
-    question_id: number;
-    answer: string | string[];
-    question: Question;
-  }
-  
+  type: string;
+  options?: string[];
+  question: string;
+}
 
+interface Answer {
+  question_id: number;
+  answer: string | string[];
+  question: Question;
+}
+
+interface RawApiResponse {
+  question_id: number;
+  answer: string;
+  question: Question;
+}
 
 interface ApiResponse {
   status: string;
   results: number;
-  data: Answer[];
+  data: RawApiResponse[];
 }
 
 const UserRow: React.FC<{ user: User }> = ({ user }) => {
@@ -35,19 +39,19 @@ const UserRow: React.FC<{ user: User }> = ({ user }) => {
 
   const handleRowClick = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/answers/${user.id}`);
+      const response = await fetch(`https://bioverse-intake-questionnaire-system-backend.vercel.app/api/answers/${user.id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: ApiResponse = await response.json();
 
-      const formattedData = data.data.map((item: any) => ({
+      const formattedData: Answer[] = data.data.map(item => ({
         question_id: item.question_id,
         answer: item.answer.startsWith('[') ? JSON.parse(item.answer) : item.answer,
         question: item.question,
-    }));
-    
-    setQuestionnaires(formattedData);
+      }));
+
+      setQuestionnaires(formattedData);
       setIsOpen(true);
     } catch (error) {
       console.error('Failed to fetch:', error);

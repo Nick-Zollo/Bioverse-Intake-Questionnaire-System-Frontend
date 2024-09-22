@@ -37,7 +37,7 @@ export default async function QuestionnairePage({ params }: { params: { id: stri
     redirect('/login');
   }
 
-  const response = await fetch(`http://localhost:3001/questionnaire/${questionnaireId}`);
+  const response = await fetch(`https://bioverse-intake-questionnaire-system-backend.vercel.app/api/questionnaire/${questionnaireId}`);
   const data: QuestionnaireData = await response.json();
 
   if (!response.ok) {
@@ -47,7 +47,7 @@ export default async function QuestionnairePage({ params }: { params: { id: stri
 
   const questions: Question[] = data.data.Questions;
 
-  const previousAnswersResponse = await fetch(`http://localhost:3001/answers/${userId}`);
+  const previousAnswersResponse = await fetch(`https://bioverse-intake-questionnaire-system-backend.vercel.app/api/answers/${userId}`);
 
   if (!previousAnswersResponse.ok) {
     console.error('Failed to fetch previous answers:', previousAnswersResponse.status);
