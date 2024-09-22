@@ -6,13 +6,22 @@ import Modal from './Modal';
 interface User {
   id: number;
   username: string;
-  completedQuestionnaires: number;
+  completed_questionnaires: number;
 }
 
-interface Answer {
-  question_id: number;
-  answer: string;
-}
+interface Question {
+    type: string;
+    options?: string[];
+    question: string;
+  }
+  
+  interface Answer {
+    question_id: number;
+    answer: string | string[];
+    question: Question;
+  }
+  
+
 
 interface ApiResponse {
   status: string;
@@ -32,12 +41,13 @@ const UserRow: React.FC<{ user: User }> = ({ user }) => {
       }
       const data: ApiResponse = await response.json();
 
-      const formattedData = data.data.map((item: Answer) => ({
+      const formattedData = data.data.map((item: any) => ({
         question_id: item.question_id,
         answer: item.answer.startsWith('[') ? JSON.parse(item.answer) : item.answer,
-      }));
-
-      setQuestionnaires(formattedData);
+        question: item.question,
+    }));
+    
+    setQuestionnaires(formattedData);
       setIsOpen(true);
     } catch (error) {
       console.error('Failed to fetch:', error);
@@ -48,7 +58,7 @@ const UserRow: React.FC<{ user: User }> = ({ user }) => {
     <>
       <tr className="hover:bg-gray-100 cursor-pointer" onClick={handleRowClick}>
         <td className="border px-4 py-2">{user.username}</td>
-        <td className="border px-4 py-2">{user.completedQuestionnaires}</td>
+        <td className="border px-4 py-2">{user.completed_questionnaires}</td>
       </tr>
       {isOpen && (
         <Modal

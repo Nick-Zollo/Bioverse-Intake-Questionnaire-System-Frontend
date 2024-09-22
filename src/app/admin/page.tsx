@@ -4,8 +4,10 @@ import UserRow from './UserRow';
 interface User {
   id: number;
   username: string;
-  completedQuestionnaires: number;
+  completed_questionnaires: number;
 }
+
+export const revalidate = 60;
 
 const AdminPage = async () => {
   const response = await fetch('http://localhost:3001/users');
