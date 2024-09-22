@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 interface LoginResponse {
     message: string;
+    userId: number;
     isAdmin: boolean;
 }
 
@@ -27,7 +28,7 @@ export default function Login() {
 
         if (res.ok) {
             const data: LoginResponse = await res.json();
-            console.log('data', data);
+
             if (data.isAdmin) {
                 router.push('/admin');
             } else {
