@@ -74,7 +74,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-6">
       <input type="hidden" name="userId" value={userId} />
       {questions.length > 0 ? (
         questions.map((question) => {
@@ -82,7 +82,7 @@ const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({ userId, questions
           const previousAnswer = previousAnswers[question.id];
 
           return (
-            <div key={question.id} className="max-w-2xl mx-auto rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300 space-y-4">
+            <div key={question.id} className="rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300 space-y-4">
               <p className="text-xl font-semibold">{parsedQuestion.question}</p>
               {parsedQuestion.type === 'mcq' ? (
                 <ul className="space-y-2">
